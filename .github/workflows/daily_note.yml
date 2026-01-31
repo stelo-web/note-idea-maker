@@ -1,0 +1,29 @@
+name: Generate Daily Note Articles
+
+on:
+  schedule:
+    - cron: '0 21 * * *'  # 日本時間 朝6:00
+    - cron: '0 7 * * *'   # 日本時間 夜16:00
+  workflow_dispatch:      # 手動実行用
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install google-generativeai firebase-admin
+
+      - name: Run script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: python main.py
